@@ -77,7 +77,20 @@ const usersController = {
   }),
 
   //! profile
-  // You can add the profile handler here when needed
+
+  profile: asyncHandler(async (req, res) => {
+    //! find the user
+
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    //! send the user data
+    res.json({
+      username: user.username,
+      email: user.email,
+    });
+  }),
 };
 
 module.exports = usersController;
