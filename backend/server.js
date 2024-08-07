@@ -5,6 +5,7 @@ dotenv.config({ path: path.resolve(__dirname, ".env") });
 const express = require("express");
 const userRouter = require("./routes/userRouter");
 const mongoose = require("mongoose");
+const errorHandler = require("./middlewares/errorHandlerMiddleware");
 const app = express();
 
 //! connect to mongodb
@@ -20,6 +21,10 @@ app.use(express.json());
 //!Routes
 
 app.use("/", userRouter);
+
+//! Error handling middleware
+
+app.use(errorHandler);
 
 //! Start the server
 

@@ -63,9 +63,16 @@ const usersController = {
     }
 
     //! Generate JWT token
-    const token = jwt.sign({
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "30d",
+    });
+    //! Send response
+    res.status(200).json({
+      message: "Logged in successfully",
+      token,
       id: user._id,
       username: user.username,
+      email: user.email,
     });
   }),
 
