@@ -2,34 +2,34 @@ const dotenv = require("dotenv");
 const path = require("path");
 
 dotenv.config({ path: path.resolve(__dirname, ".env") });
+
 const express = require("express");
-const userRouter = require("./routes/userRouter");
 const mongoose = require("mongoose");
 const errorHandler = require("./middlewares/errorHandlerMiddleware");
+
+const userRouter = require("./routes/userRouter");
+const categoryRouter = require("./routes/categoryRouter");
+
 const app = express();
 
-//! connect to mongodb
-
+// Connect to MongoDB
 mongoose
   .connect(process.env.MONGODB_URI)
   .then(() => console.log("Connected to MongoDB successfully"))
   .catch((err) => console.log(err));
 
-//! middleware
+// Middleware
 app.use(express.json());
 
-//!Routes
-
+// Routes
 app.use("/", userRouter);
+app.use("/", categoryRouter);
 
-//! Error handling middleware
-
+// Error handling middleware
 app.use(errorHandler);
 
-//! Start the server
-
+// Start the server
 const PORT = process.env.PORT || 8000;
-
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
