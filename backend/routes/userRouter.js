@@ -3,20 +3,17 @@ const usersController = require("../controllers/usersCtrl");
 const isAuthenticated = require("../middlewares/isAuth");
 const userRouter = express.Router();
 
-//! register
-
+//! Register
 userRouter.post("/api/v1/users/register", usersController.register);
 
-//! login
-
+//! Login
 userRouter.post("/api/v1/users/login", usersController.login);
 
-//! profile
-
+//! Profile
 userRouter.get(
   "/api/v1/users/profile",
-  usersController.profile,
-  isAuthenticated
+  isAuthenticated,
+  usersController.profile
 );
 
 module.exports = userRouter;
