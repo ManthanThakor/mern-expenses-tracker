@@ -102,16 +102,22 @@ const usersController = {
     await user.save();
     res.json({ message: "Password changed successfully" });
   }),
+
   //! update user profile
   updateProfile: asyncHandler(async (req, res) => {
-    const user = await User.findByIdAndUpdate(req.user.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-    res.json(user);
+    const user = await User.findByIdAndUpdate();
+    const { email, username } = req.body;
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user,
+      {
+        email,
+        username,
+      },
+      {
+        new: true,
+      }
+    );
+    res.json({ message: "Profile updated successfully", updatedUser });
   }),
 };
 
