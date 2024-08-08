@@ -84,40 +84,53 @@ const usersController = {
     });
   }),
 
-  //! change password
+  //! Change Password
   changePassword: asyncHandler(async (req, res) => {
     const { oldPassword, newPassword } = req.body;
     const user = await User.findById(req.user.id);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
+
+    //! Compare old password
     const isMatch = await bcrypt.compare(oldPassword, user.password);
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid old password" });
     }
+
+    //! Hash new password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(newPassword, salt);
     user.password = hashedPassword;
-    //! resave
+
+    //! Save updated user
     await user.save();
     res.json({ message: "Password changed successfully" });
   }),
 
-  //! update user profile
+  //! Update Profile
   updateProfile: asyncHandler(async (req, res) => {
-    const user = await User.findByIdAndUpdate();
     const { email, username } = req.body;
+
+    //! Validate input
+    if (!email && !username) {
+      return res.status(400).json({ message: "No fields to update" });
+    }
+
     const updatedUser = await User.findByIdAndUpdate(
-      req.user,
-      {
-        email,
-        username,
-      },
-      {
-        new: true,
-      }
+      req.user.id, // Fixed: pass user ID from req.user
+      { email, username },
+      { new: true }
     );
-    res.json({ message: "Profile updated successfully", updatedUser });
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json({
+      message: "Profile updated successfully",
+      updatedUser,
+    });
   }),
 };
 
