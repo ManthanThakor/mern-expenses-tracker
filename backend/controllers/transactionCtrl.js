@@ -3,24 +3,27 @@ const Category = require("../model/Category");
 const Transaction = require("../model/Transaction");
 
 const transactionController = {
-  //!add
+  //! add
   create: asyncHandler(async (req, res) => {
     const { type, category, amount, date, description } = req.body;
     if (!amount || !type || !date) {
-      throw new Error("Type, amount and date are required");
+      throw new Error("Type, amount, and date are required");
     }
-    //! Create
+
+    //! Create transaction
     const transaction = await Transaction.create({
       user: req.user,
       type,
       category,
       amount,
+      date: new Date(date),
       description,
     });
+
     res.status(201).json(transaction);
   }),
 
-  //!lists
+  //! get filtered transactions
   getFilteredTransactions: asyncHandler(async (req, res) => {
     const { startDate, endDate, type, category } = req.query;
     let filters = { user: req.user };
@@ -35,42 +38,49 @@ const transactionController = {
       filters.type = type;
     }
     if (category) {
-      if (category === "All") {
-        //!  No category filter needed when filtering for 'All'
-      } else if (category === "Uncategorized") {
-        //! Filter for transactions that are specifically categorized as 'Uncategorized'
-        filters.category = "Uncategorized";
-      } else {
-        filters.category = category;
+      if (category !== "All") {
+        filters.category =
+          category === "Uncategorized" ? "Uncategorized" : category;
       }
     }
+
     const transactions = await Transaction.find(filters).sort({ date: -1 });
     res.json(transactions);
   }),
 
-  //!update
+  //! update
   update: asyncHandler(async (req, res) => {
-    //! Find the transaction
     const transaction = await Transaction.findById(req.params.id);
+
     if (transaction && transaction.user.toString() === req.user.toString()) {
-      (transaction.type = req.body.type || transaction.type),
-        (transaction.category = req.body.category || transaction.category),
-        (transaction.amount = req.body.amount || transaction.amount),
-        (transaction.date = req.body.date || transaction.date),
-        (transaction.description =
-          req.body.description || transaction.description);
-      //update
+      transaction.type = req.body.type || transaction.type;
+      transaction.category = req.body.category || transaction.category;
+      transaction.amount = req.body.amount || transaction.amount;
+      transaction.date = req.body.date
+        ? new Date(req.body.date)
+        : transaction.date;
+      transaction.description = req.body.description || transaction.description;
+
       const updatedTransaction = await transaction.save();
       res.json(updatedTransaction);
+    } else {
+      res
+        .status(404)
+        .json({ message: "Transaction not found or user not authorized" });
     }
   }),
+
   //! delete
   delete: asyncHandler(async (req, res) => {
-    //! Find the transaction
     const transaction = await Transaction.findById(req.params.id);
+
     if (transaction && transaction.user.toString() === req.user.toString()) {
       await Transaction.findByIdAndDelete(req.params.id);
       res.json({ message: "Transaction removed" });
+    } else {
+      res
+        .status(404)
+        .json({ message: "Transaction not found or user not authorized" });
     }
   }),
 };
