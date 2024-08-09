@@ -9,6 +9,7 @@ import PublicNavbar from "./components/Navbar/PublicNavbar";
 import PrivateNavbar from "./components/Navbar/PrivateNavbar";
 import { getUserFromStorage } from "./utils/getUserFromStorage";
 import AddCategory from "./components/Category/AddCategory";
+import CategoriesList from "./components/Category/CategoriesList";
 
 function App() {
   const token = getUserFromStorage();
@@ -25,6 +26,7 @@ function App() {
           <Route path="/login" element={<LoginForm />} />
           <Route path="/register" element={<RegistrationForm />} />
           <Route path="/add-category" element={<AddCategory />} />
+          <Route path="/categories" element={<CategoriesList />} />
         </Routes>
       </BrowserRouter>
     </>
