@@ -10,23 +10,39 @@ import {
 import { SiDatabricks } from "react-icons/si";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
+import { addCategoryAPI } from "../../services/category/categoryService";
+import AlertMessage from "../Alert/AlertMessage";
 
 const validationSchema = Yup.object({
-  name: Yup.string()
-    .required("Category name is required")
-    .oneOf(["income", "expense"]),
+  name: Yup.string().required("Category name is required"),
   type: Yup.string()
     .required("Category type is required")
     .oneOf(["income", "expense"]),
 });
 
 const AddCategory = () => {
+  //Navigate
+  const navigate = useNavigate();
+
+  // Mutation
+  const { mutateAsync, isPending, isError, error, isSuccess } = useMutation({
+    mutationFn: addCategoryAPI,
+    mutationKey: ["login"],
+  });
+
   const formik = useFormik({
     initialValues: {
       type: "",
       name: "",
     },
-    onSubmit: (values) => {},
+    validationSchema,
+    onSubmit: (values) => {
+      mutateAsync(values)
+        .then((data) => {
+          navigate("/categories");
+        })
+        .catch((e) => console.log(e));
+    },
   });
 
   return (
