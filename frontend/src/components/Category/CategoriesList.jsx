@@ -1,53 +1,14 @@
 import React from "react";
 import { FaTrash, FaEdit } from "react-icons/fa";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Link, useNavigate } from "react-router-dom";
-import {
-  deleteCategoryAPI,
-  listCategoriesAPI,
-} from "../../services/category/categoryService";
-import AlertMessage from "../Alert/AlertMessage";
+import { Link } from "react-router-dom";
 
 const CategoriesList = () => {
-  //fetching
-  const { data, isError, isLoading, isFetched, error, refetch } = useQuery({
-    queryFn: listCategoriesAPI,
-    queryKey: ["list-categories"],
-  });
-
-  //Deleting
-  //Navigate
-  const navigate = useNavigate();
-
-  // Mutation
-  const {
-    mutateAsync,
-    isPending,
-    error: categoryErr,
-    isSuccess,
-  } = useMutation({
-    mutationFn: deleteCategoryAPI,
-    mutationKey: ["delete-category"],
-  });
-  //Delete handler
-  const handleDelete = (id) => {
-    mutateAsync(id)
-      .then((data) => {
-        //refetch
-        refetch();
-      })
-      .catch((e) => console.log(e));
-  };
   return (
     <div className="max-w-md mx-auto my-10 bg-white p-6 rounded-lg shadow-lg">
       <h2 className="text-2xl font-semibold text-gray-800 mb-4">Categories</h2>
-      {/* Display message */}
-      {isLoading && <AlertMessage type="loading" message="Loading" />}
-      {isError && (
-        <AlertMessage type="error" message={error.response.data.message} />
-      )}
       <ul className="space-y-4">
-        {data?.map((category) => (
+        {[1, 1]?.map((category) => (
           <li
             key={category?._id}
             className="flex justify-between items-center bg-gray-50 p-3 rounded-md"
@@ -72,7 +33,7 @@ const CategoriesList = () => {
                 </button>
               </Link>
               <button
-                onClick={() => handleDelete(category?._id)}
+                // onClick={() => handleDelete(category?._id)}
                 className="text-red-500 hover:text-red-700"
               >
                 <FaTrash />
