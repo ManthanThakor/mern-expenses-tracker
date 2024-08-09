@@ -9,35 +9,36 @@ import {
 import AlertMessage from "../Alert/AlertMessage";
 
 const CategoriesList = () => {
-  //fetching
-  const { data, isError, isLoading, isFetched, error, refetch } = useQuery({
+  //Fetching categories
+  const { data, isError, isLoading, error, refetch } = useQuery({
     queryFn: listCategoriesAPI,
     queryKey: ["list-categories"],
   });
 
-  //Deleting
   //Navigate
   const navigate = useNavigate();
 
-  // Mutation
-  const {
-    mutateAsync,
-    isPending,
-    error: categoryErr,
-    isSuccess,
-  } = useMutation({
+  //Mutation for deleting a category
+  const { mutateAsync } = useMutation({
     mutationFn: deleteCategoryAPI,
     mutationKey: ["delete-category"],
   });
+
   //Delete handler
   const handleDelete = (id) => {
     mutateAsync(id)
-      .then((data) => {
-        //refetch
-        refetch();
+      .then(() => {
+        //Refetch the categories
+        refetch().then(({ data }) => {
+          //Check if the list is empty after deletion
+          if (data.length === 0) {
+            navigate("/add-category"); //Redirect to "Add New Category" if no categories left
+          }
+        });
       })
       .catch((e) => console.log(e));
   };
+
   return (
     <div className="max-w-md mx-auto my-10 bg-white p-6 rounded-lg shadow-lg">
       <h2 className="text-2xl font-semibold text-gray-800 mb-4">Categories</h2>
