@@ -1,0 +1,53 @@
+html,
+body,
+#scene {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  background: black;
+  overflow: hidden;
+}
+
+#scene {
+  perspective: 150px; /* The lower this is, the fancier it gets */
+}
+
+#emitter {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform-style: preserve-3d;
+  animation: rotate 4s infinite linear;
+}
+
+.particle {
+  position: absolute;
+  background: white;
+  border-radius: 50%; /* Ensures circular shape */
+  box-shadow: 0 0 8px rgba(255, 84, 84, 0.8); /* Glowing effect */
+  opacity: 0.8;
+  animation: fadeInOut 1s ease-in-out;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotateY(0) rotateZ(-180deg);
+  }
+  100% {
+    transform: rotateY(360deg) rotateZ(180deg);
+  }
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}

@@ -16,7 +16,7 @@ const ParticleEmitter = () => {
       const z = randMinMax(-200, 200);
       const degree = randMinMax(0, 360);
       const color = `hsla(${randMinMax(200, 320)}, 80%, 60%, 1)`;
-      const size = randMinMax(4, 10); // Random size for variation
+      const size = randMinMax(2, 10); // Random size for variation
 
       particle.style.background = color;
       particle.style.width = `${size}px`;
@@ -50,7 +50,6 @@ const ParticleEmitter = () => {
   return (
     <div id="scene">
       <div id="emitter"></div>
-      <div className="loader"></div>
     </div>
   );
 };
