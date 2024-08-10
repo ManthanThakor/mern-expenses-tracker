@@ -38,6 +38,10 @@ const AppContent = () => {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/profile" element={<UserProfile />} />
       </Routes>
+      {/* Footer */}
+      <footer className="text-gray-200 bg-gray-800 text-center py-4">
+        Copyright &copy; {new Date().getFullYear()} Mr Expenses Tracker
+      </footer>
     </>
   );
 };

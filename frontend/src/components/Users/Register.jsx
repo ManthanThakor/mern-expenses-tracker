@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useNavigate } from "react-router-dom";
@@ -6,8 +6,9 @@ import { useMutation } from "@tanstack/react-query";
 import { FaUser, FaEnvelope, FaLock } from "react-icons/fa";
 import { registerAPI } from "../../services/users/userService";
 import AlertMessage from "../Alert/AlertMessage";
+import ParticleEmitter from "../LoadingPage/Loading"; // Loader component
 
-//Validations
+// Validations
 const validationSchema = Yup.object({
   username: Yup.string().required("Username is required"),
   email: Yup.string()
@@ -20,41 +21,46 @@ const validationSchema = Yup.object({
     .oneOf([Yup.ref("password"), null], "Passwords must match")
     .required("Confirming your password is required"),
 });
+
 const RegistrationForm = () => {
-  //Navigate
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false); // Loader state
+
   // Mutation
-  const { mutateAsync, isPending, isError, error, isSuccess } = useMutation({
+  const { mutateAsync, isError, error, isSuccess } = useMutation({
     mutationFn: registerAPI,
     mutationKey: ["register"],
+    onSuccess: () => {
+      setLoading(false); // Hide loader on success
+    },
+    onError: (e) => {
+      console.error("Error:", e);
+      setLoading(false); // Hide loader on error
+    },
   });
+
   const formik = useFormik({
     initialValues: {
+      username: "",
       email: "",
       password: "",
-      username: "",
+      confirmPassword: "",
     },
-    // Validations
     validationSchema,
-    //Submit
     onSubmit: (values) => {
-      console.log(values);
-      //http request
-      mutateAsync(values)
-        .then((data) => {
-          console.log(data);
-        })
-        .catch((e) => console.log(e));
+      setLoading(true); // Show loader on submit
+      mutateAsync(values);
     },
   });
-  //Redirect
+
   useEffect(() => {
-    setTimeout(() => {
-      if (isSuccess) {
+    if (isSuccess) {
+      setTimeout(() => {
         navigate("/login");
-      }
-    }, 3000);
-  }, [isPending, isError, error, isSuccess]);
+      }, 500); // Optional delay for demonstration
+    }
+  }, [isSuccess, navigate]);
+
   return (
     <form
       onSubmit={formik.handleSubmit}
@@ -63,19 +69,20 @@ const RegistrationForm = () => {
       <h2 className="text-3xl font-semibold text-center text-gray-800">
         Sign Up
       </h2>
-      {/* Display messages */}
-      {isPending && <AlertMessage type="loading" message="Loading...." />}
+      {loading && <ParticleEmitter />} {/* Display loader */}
       {isError && (
-        <AlertMessage type="error" message={error.response.data.message} />
+        <AlertMessage
+          type="error"
+          message={error.response?.data?.message || "An error occurred"}
+        />
       )}
       {isSuccess && (
-        <AlertMessage type="success" message="Registration success" />
+        <AlertMessage type="success" message="Registration successful" />
       )}
       <p className="text-sm text-center text-gray-500">
         Join our community now!
       </p>
-
-      {/* Input Field - Username */}
+      {/* Input Fields */}
       <div className="relative">
         <FaUser className="absolute top-3 left-3 text-gray-400" />
         <input
@@ -89,8 +96,6 @@ const RegistrationForm = () => {
           <span className="text-xs text-red-500">{formik.errors.username}</span>
         )}
       </div>
-
-      {/* Input Field - Email */}
       <div className="relative">
         <FaEnvelope className="absolute top-3 left-3 text-gray-400" />
         <input
@@ -104,8 +109,6 @@ const RegistrationForm = () => {
           <span className="text-xs text-red-500">{formik.errors.email}</span>
         )}
       </div>
-
-      {/* Input Field - Password */}
       <div className="relative">
         <FaLock className="absolute top-3 left-3 text-gray-400" />
         <input
@@ -119,8 +122,6 @@ const RegistrationForm = () => {
           <span className="text-xs text-red-500">{formik.errors.password}</span>
         )}
       </div>
-
-      {/* Input Field - Confirm Password */}
       <div className="relative">
         <FaLock className="absolute top-3 left-3 text-gray-400" />
         <input
@@ -136,8 +137,6 @@ const RegistrationForm = () => {
           </span>
         )}
       </div>
-
-      {/* Submit Button */}
       <button
         type="submit"
         className="w-full bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-600 hover:to-teal-600 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:shadow-outline transition duration-150 ease-in-out"
