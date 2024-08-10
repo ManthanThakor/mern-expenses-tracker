@@ -11,7 +11,7 @@ const isAuthenticated = (req, res, next) => {
     if (err) {
       return res.status(403).json({ message: "Invalid token" });
     }
-    req.user = { id: decoded.id }; // Ensure `decoded` contains the user ID
+    req.user = decoded.id; // Store user ID in req.user
     next();
   });
 };

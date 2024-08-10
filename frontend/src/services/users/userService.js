@@ -6,12 +6,17 @@ import { getUserFromStorage } from "../../utils/getUserFromStorage";
 const token = getUserFromStorage();
 //! Login
 export const loginAPI = async ({ email, password }) => {
-  const response = await axios.post(`${BASE_URL}/users/login`, {
-    email,
-    password,
-  });
-  //Return a promise
-  return response.data;
+  try {
+    const response = await axios.post(`${BASE_URL}/users/login`, {
+      email,
+      password,
+    });
+    console.log(response.data); // Debugging
+    return response.data;
+  } catch (error) {
+    console.error("Login error:", error.response.data); // Debugging
+    throw error;
+  }
 };
 
 //! register

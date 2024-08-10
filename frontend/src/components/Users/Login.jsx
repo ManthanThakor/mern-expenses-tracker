@@ -37,16 +37,19 @@ const LoginForm = () => {
     validationSchema,
     //Submit
     onSubmit: (values) => {
-      console.log(values);
-      //http request
+      console.log("Form values:", values); // Debugging
       mutateAsync(values)
         .then((data) => {
+          console.log("Login data:", data); // Debugging
           //dispatch
           dispatch(loginAction(data));
           //Save the user into localStorage
           localStorage.setItem("userInfo", JSON.stringify(data));
         })
-        .catch((e) => console.log(e));
+        .catch((e) => {
+          console.error("Error:", e); // Debugging
+          // Handle error if needed
+        });
     },
   });
   //Redirect
