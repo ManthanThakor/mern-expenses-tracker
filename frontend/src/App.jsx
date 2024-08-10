@@ -14,6 +14,9 @@ import UpdateCategory from "./components/Category/UpdateCategory";
 import TransactionForm from "./components/Transactions/TransactionForm";
 import Dashboard from "./components/Users/Dashboard";
 import UserProfile from "./components/Users/UserProfile";
+import ParticleComponent from "./components/LoadingPage/Loading";
+import ThreeLoadingScreen from "./components/LoadingPage/Loading";
+import ParticleEmitter from "./components/LoadingPage/Loading";
 
 function App() {
   const token = getUserFromStorage();
@@ -36,6 +39,7 @@ function App() {
           <Route path="/add-transaction" element={<TransactionForm />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/profile" element={<UserProfile />} />
+          <Route path="/Loading" element={<ParticleEmitter />} />
         </Routes>
       </BrowserRouter>
     </>

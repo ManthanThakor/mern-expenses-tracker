@@ -1,0 +1,10 @@
+body {
+  margin: 0;
+  overflow: hidden;
+  font-family: Arial, sans-serif;
+}
+
+#root {
+  margin: 0;
+  padding: 0;
+}
