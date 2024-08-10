@@ -26,19 +26,16 @@ export const registerAPI = async ({ email, password, username }) => {
 };
 
 //! change password
-export const changePasswordAPI = async (newPassword) => {
+export const changePasswordAPI = async ({ oldPassword, newPassword }) => {
   const response = await axios.put(
     `${BASE_URL}/users/change-password`,
-    {
-      newPassword,
-    },
+    { oldPassword, newPassword }, // Ensure both oldPassword and newPassword are sent
     {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     }
   );
-  //Return a promise
   return response.data;
 };
 
@@ -57,5 +54,15 @@ export const updateProfileAPI = async ({ email, username }) => {
     }
   );
   //Return a promise
+  return response.data;
+};
+
+//! fetch user profile
+export const fetchUserProfileAPI = async () => {
+  const response = await axios.get(`${BASE_URL}/users/profile`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
   return response.data;
 };

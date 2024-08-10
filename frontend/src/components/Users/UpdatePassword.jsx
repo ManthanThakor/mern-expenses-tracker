@@ -1,59 +1,135 @@
-import React, { useState } from "react";
+import React from "react";
 import { AiOutlineLock } from "react-icons/ai";
+import { useMutation } from "@tanstack/react-query";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { useDispatch } from "react-redux";
+import { changePasswordAPI } from "../../services/users/userService";
+import { logoutAction } from "../../redux/slice/authSlice";
+import AlertMessage from "../Alert/AlertMessage";
+
+// Validation schema for the password change form
 const validationSchema = Yup.object({
-  password: Yup.string()
+  oldPassword: Yup.string().required("Old Password is required"),
+  newPassword: Yup.string()
     .min(5, "Password must be at least 5 characters long")
-    .required("Email is required"),
+    .required("New Password is required"),
 });
+
 const UpdatePassword = () => {
+  const dispatch = useDispatch();
+
+  // Mutation for changing password
+  const { mutateAsync, isPending, isError, error, isSuccess } = useMutation({
+    mutationFn: changePasswordAPI,
+    mutationKey: ["change-password"],
+  });
+
   const formik = useFormik({
     initialValues: {
-      password: "123456",
+      oldPassword: "",
+      newPassword: "",
     },
-    // Validations
     validationSchema,
-    //Submit
-    onSubmit: (values) => {
-      console.log(values);
+    onSubmit: async (values) => {
+      try {
+        await mutateAsync({
+          oldPassword: values.oldPassword,
+          newPassword: values.newPassword,
+        });
+        // Logout user after password change
+        dispatch(logoutAction());
+        localStorage.removeItem("userInfo");
+      } catch (error) {
+        console.error(error);
+      }
     },
   });
+
   return (
-    <div className="flex flex-col items-center justify-center p-4">
-      <h2 className="text-lg font-semibold mb-4">Change Your Password</h2>
-      <form onSubmit={formik.handleSubmit} className="w-full max-w-xs">
-        <div className="mb-4">
-          <label
-            className="block text-sm font-medium mb-2"
-            htmlFor="new-password"
-          >
-            New Password
-          </label>
-          <div className="flex items-center border-2 py-2 px-3 rounded">
-            <AiOutlineLock className="text-gray-400 mr-2" />
+    <div className="max-w-4xl mx-auto my-10 p-8 bg-white rounded-lg shadow-md">
+      <h3 className="text-xl font-semibold text-gray-800 mb-4">
+        Change Password
+      </h3>
+
+      {/* Display alert messages */}
+      {isPending && (
+        <AlertMessage type="loading" message="Changing password...." />
+      )}
+      {isError && (
+        <AlertMessage
+          type="error"
+          message={error.response?.data?.message || "An error occurred"}
+        />
+      )}
+      {isSuccess && (
+        <AlertMessage
+          type="success"
+          message="Password changed successfully. Please log in again."
+        />
+      )}
+
+      {/* Password change form */}
+      <form onSubmit={formik.handleSubmit} className="space-y-6">
+        {/* Old Password Field */}
+        <div className="flex items-center space-x-4">
+          <AiOutlineLock className="text-3xl text-gray-400" />
+          <div className="flex-1">
+            <label
+              htmlFor="oldPassword"
+              className="text-sm font-medium text-gray-700"
+            >
+              Old Password
+            </label>
             <input
-              id="new-password"
+              {...formik.getFieldProps("oldPassword")}
               type="password"
-              name="newPassword"
-              {...formik.getFieldProps("email")}
-              className="outline-none flex-1"
-              placeholder="Enter new password"
+              id="oldPassword"
+              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-4 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Enter your old password"
             />
           </div>
-          {formik.touched.password && formik.errors.password && (
+          {formik.touched.oldPassword && formik.errors.oldPassword && (
             <span className="text-xs text-red-500">
-              {formik.errors.password}
+              {formik.errors.oldPassword}
             </span>
           )}
         </div>
 
-        <button
-          type="submit"
-          className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        >
-          Update Password
-        </button>
+        {/* New Password Field */}
+        <div className="flex items-center space-x-4">
+          <AiOutlineLock className="text-3xl text-gray-400" />
+          <div className="flex-1">
+            <label
+              htmlFor="newPassword"
+              className="text-sm font-medium text-gray-700"
+            >
+              New Password
+            </label>
+            <input
+              {...formik.getFieldProps("newPassword")}
+              type="password"
+              id="newPassword"
+              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-4 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Enter your new password"
+            />
+          </div>
+          {formik.touched.newPassword && formik.errors.newPassword && (
+            <span className="text-xs text-red-500">
+              {formik.errors.newPassword}
+            </span>
+          )}
+        </div>
+
+        {/* Change Password Button */}
+        <div className="flex justify-end mt-6">
+          <button
+            type="submit"
+            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          >
+            Change Password
+          </button>
+        </div>
       </form>
     </div>
   );
