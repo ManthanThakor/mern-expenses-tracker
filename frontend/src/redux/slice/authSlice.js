@@ -1,18 +1,15 @@
 import { createSlice } from "@reduxjs/toolkit";
-// Load user from local storage if available
-const storedUser = JSON.parse(localStorage.getItem("userInfo"));
+
 //!Initial State
 const authSlice = createSlice({
   name: "auth",
   initialState: {
-    user: storedUser ? storedUser : null, // Initialize with stored user if available
+    user: JSON.parse(localStorage.getItem("userInfo")) || null,
   },
   //1 Reducers
   reducers: {
     loginAction: (state, action) => {
       state.user = action.payload;
-      // Save user to local storage
-      localStorage.setItem("userInfo", JSON.stringify(action.payload));
     },
     //Logout
     logoutAction: (state, action) => {

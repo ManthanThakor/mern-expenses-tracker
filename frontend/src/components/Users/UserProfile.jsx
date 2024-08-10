@@ -24,30 +24,57 @@ const UserProfile = () => {
   useEffect(() => {
     // Fetch user data from the server
     const fetchData = async () => {
-      const userData = await fetchUserProfileAPI();
-      setInitialValues({
-        email: userData.email,
-        username: userData.username,
-        oldPassword: "",
-        newPassword: "",
-      });
+      try {
+        const userData = await fetchUserProfileAPI();
+        setInitialValues({
+          email: userData.email,
+          username: userData.username,
+          oldPassword: "",
+          newPassword: "",
+        });
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+      }
     };
     fetchData();
   }, []);
 
-  const updateProfileMutation = useMutation(updateProfileAPI);
-  const changePasswordMutation = useMutation(changePasswordAPI);
+  // Mutation hooks
+  const updateProfileMutation = useMutation(updateProfileAPI, {
+    onError: (error) => {
+      console.error(
+        "Error updating profile:",
+        error.response?.data || error.message
+      );
+    },
+    onSuccess: () => {
+      console.log("Profile updated successfully");
+    },
+  });
+
+  const changePasswordMutation = useMutation(changePasswordAPI, {
+    onError: (error) => {
+      console.error(
+        "Error changing password:",
+        error.response?.data || error.message
+      );
+    },
+    onSuccess: () => {
+      console.log("Password changed successfully");
+    },
+  });
 
   const formik = useFormik({
     initialValues,
     onSubmit: async (values) => {
       try {
-        // Handle profile update
         if (isEditing) {
-          await updateProfileMutation.mutateAsync(values);
+          await updateProfileMutation.mutateAsync({
+            email: values.email,
+            username: values.username,
+          });
         }
 
-        // Handle password change
         if (values.oldPassword && values.newPassword) {
           await changePasswordMutation.mutateAsync({
             oldPassword: values.oldPassword,
@@ -57,7 +84,10 @@ const UserProfile = () => {
 
         setIsEditing(false);
       } catch (error) {
-        console.error(error);
+        console.error(
+          "Form submission error:",
+          error.response?.data || error.message
+        );
       }
     },
   });
@@ -71,7 +101,7 @@ const UserProfile = () => {
     <div className="max-w-4xl mx-auto my-10 p-8 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white rounded-lg shadow-xl animate-fadeIn">
       <h1 className="mb-4 text-3xl text-center font-extrabold">User Profile</h1>
 
-      {updateProfileMutation.isPending && (
+      {updateProfileMutation.isLoading && (
         <AlertMessage type="loading" message="Updating profile..." />
       )}
       {updateProfileMutation.isError && (
@@ -87,7 +117,7 @@ const UserProfile = () => {
         <AlertMessage type="success" message="Profile updated successfully!" />
       )}
 
-      {changePasswordMutation.isPending && (
+      {changePasswordMutation.isLoading && (
         <AlertMessage type="loading" message="Changing password..." />
       )}
       {changePasswordMutation.isError && (
@@ -146,12 +176,12 @@ const UserProfile = () => {
                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-4 bg-gray-700 text-white focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   placeholder="Your username"
                 />
+                {formik.touched.username && formik.errors.username && (
+                  <span className="text-xs text-red-500">
+                    {formik.errors.username}
+                  </span>
+                )}
               </div>
-              {formik.touched.username && formik.errors.username && (
-                <span className="text-xs text-red-500">
-                  {formik.errors.username}
-                </span>
-              )}
             </div>
 
             {/* Email Field */}
@@ -171,12 +201,12 @@ const UserProfile = () => {
                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-4 bg-gray-700 text-white focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   placeholder="Your email"
                 />
+                {formik.touched.email && formik.errors.email && (
+                  <span className="text-xs text-red-500">
+                    {formik.errors.email}
+                  </span>
+                )}
               </div>
-              {formik.touched.email && formik.errors.email && (
-                <span className="text-xs text-red-500">
-                  {formik.errors.email}
-                </span>
-              )}
             </div>
 
             {/* Password Fields */}
@@ -196,13 +226,14 @@ const UserProfile = () => {
                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-4 bg-gray-700 text-white focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   placeholder="Old password"
                 />
+                {formik.touched.oldPassword && formik.errors.oldPassword && (
+                  <span className="text-xs text-red-500">
+                    {formik.errors.oldPassword}
+                  </span>
+                )}
               </div>
-              {formik.touched.oldPassword && formik.errors.oldPassword && (
-                <span className="text-xs text-red-500">
-                  {formik.errors.oldPassword}
-                </span>
-              )}
             </div>
+
             <div className="flex items-center space-x-4">
               <FaLock className="text-3xl text-gray-200" />
               <div className="flex-1">
@@ -219,12 +250,12 @@ const UserProfile = () => {
                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-4 bg-gray-700 text-white focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   placeholder="New password"
                 />
+                {formik.touched.newPassword && formik.errors.newPassword && (
+                  <span className="text-xs text-red-500">
+                    {formik.errors.newPassword}
+                  </span>
+                )}
               </div>
-              {formik.touched.newPassword && formik.errors.newPassword && (
-                <span className="text-xs text-red-500">
-                  {formik.errors.newPassword}
-                </span>
-              )}
             </div>
 
             {/* Save Changes Button */}
@@ -250,9 +281,8 @@ const UserProfile = () => {
         {!isEditing && (
           <div className="flex justify-end mt-6 space-x-4">
             <button
-              type="button"
               onClick={handleLogout}
-              className="bg-red-600 hover:bg-red-800 text-white font-bold py-2 px-4 rounded transition-transform transform hover:scale-105"
+              className="bg-red-600 hover:bg-red-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transform transition-transform hover:scale-105"
             >
               Logout
             </button>
