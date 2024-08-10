@@ -81,7 +81,7 @@ export default function PrivateNavbar() {
                 </button>
                 <div className="hidden md:flex md:items-center">
                   <Menu as="div" className="relative">
-                    <Menu.Button className="flex rounded-full bg-gray-700 p-1 text-gray-300 hover:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <Menu.Button className="flex rounded-full bg-gray-200 p-1 text-gray-300 hover:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
                       <span className="sr-only">Open user menu</span>
                     </Menu.Button>
                     <Transition
@@ -97,7 +97,7 @@ export default function PrivateNavbar() {
                         <Menu.Item>
                           {({ active }) => (
                             <Link
-                              to="/student-dashboard"
+                              to="/dashboard"
                               className={classNames(
                                 active
                                   ? "bg-gray-700 text-white"
