@@ -40,7 +40,7 @@ export default function PublicNavbar() {
                           : "text-gray-300 hover:border-gray-500 hover:text-white"
                       }`}
                     >
-                      {path === "/" && "MasyncTracker"}
+                      {path === "/" && "MrTracker"}
                       {path === "/register" && "Register"}
                       {path === "/login" && "Login"}
                     </Link>
@@ -81,7 +81,7 @@ export default function PublicNavbar() {
                       : "text-gray-300 hover:bg-gray-700 hover:text-white"
                   }`}
                 >
-                  {path === "/" && "MasyncTracker"}
+                  {path === "/" && "MrTracker"}
                   {path === "/register" && "Register"}
                   {path === "/login" && "Login"}
                 </Disclosure.Button>

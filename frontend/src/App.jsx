@@ -14,6 +14,7 @@ import Dashboard from "./components/Users/Dashboard";
 import UserProfile from "./components/Users/UserProfile";
 import ParticleEmitter from "./components/LoadingPage/Loading"; // Loader component
 import useNavigationDelay from "./hooks/UseNavigateDelay";
+import AuthRoute from "./components/AuthRoute/AuthRoute";
 
 const AppContent = () => {
   const user = useSelector((state) => state?.auth?.user);
@@ -21,27 +22,76 @@ const AppContent = () => {
 
   return (
     <>
-      {/* Navbar */}
-      {user ? <PrivateNavbar /> : <PublicNavbar />}
+      <div className="grid grid-rows-[auto_1fr_auto] min-h-screen">
+        {/* Navbar */}
+        {user ? <PrivateNavbar /> : <PublicNavbar />}
 
-      {loading && <ParticleEmitter />}
+        {loading && <ParticleEmitter />}
 
-      {/* Routes */}
-      <Routes>
-        <Route path="/" element={<HeroSection />} />
-        <Route path="/login" element={<LoginForm />} />
-        <Route path="/register" element={<RegistrationForm />} />
-        <Route path="/add-category" element={<AddCategory />} />
-        <Route path="/categories" element={<CategoriesList />} />
-        <Route path="/update-category/:id" element={<UpdateCategory />} />
-        <Route path="/add-transaction" element={<TransactionForm />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/profile" element={<UserProfile />} />
-      </Routes>
-      {/* Footer */}
-      <footer className="text-gray-200 bg-gray-800 text-center py-4">
-        Copyright &copy; {new Date().getFullYear()} Mr Expenses Tracker
-      </footer>
+        {/* Main Content */}
+        <main className="flex flex-col justify-center">
+          <Routes>
+            <Route path="/" element={<HeroSection />} />
+            <Route path="/login" element={<LoginForm />} />
+            <Route path="/register" element={<RegistrationForm />} />
+
+            {/* Protected Routes */}
+            <Route
+              path="/add-category"
+              element={
+                <AuthRoute>
+                  <AddCategory />
+                </AuthRoute>
+              }
+            />
+            <Route
+              path="/categories"
+              element={
+                <AuthRoute>
+                  <CategoriesList />
+                </AuthRoute>
+              }
+            />
+            <Route
+              path="/update-category/:id"
+              element={
+                <AuthRoute>
+                  <UpdateCategory />
+                </AuthRoute>
+              }
+            />
+            <Route
+              path="/add-transaction"
+              element={
+                <AuthRoute>
+                  <TransactionForm />
+                </AuthRoute>
+              }
+            />
+            <Route
+              path="/dashboard"
+              element={
+                <AuthRoute>
+                  <Dashboard />
+                </AuthRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <AuthRoute>
+                  <UserProfile />
+                </AuthRoute>
+              }
+            />
+          </Routes>
+        </main>
+
+        {/* Footer */}
+        <footer className="bg-gray-800 text-gray-200 text-center py-4">
+          Copyright &copy; {new Date().getFullYear()} Mr Expenses Tracker
+        </footer>
+      </div>
     </>
   );
 };
