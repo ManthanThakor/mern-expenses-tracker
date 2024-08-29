@@ -20,7 +20,11 @@ mongoose
 
 // Enable CORS
 const corsOptions = {
-  origin: [process.env.FRONTEND_URL ||" https://mern-expenses-tracker-nyw8.onrender.com" || "http://localhost:5173"], // Frontend URL
+  origin: [
+    process.env.FRONTEND_URL ||
+      "https://mern-expenses-tracker-nyw8.onrender.com",
+    "http://localhost:5173",
+  ],
   methods: "GET,POST,PUT,DELETE",
   allowedHeaders: "Content-Type,Authorization",
 };
