@@ -42,7 +42,7 @@ app.use("/api/v1/transactions", transactionRouter);
 app.use(errorHandler);
 
 // Start the server
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT || "https://expenses-tracker-pji3.onrender.com"|| 8000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
